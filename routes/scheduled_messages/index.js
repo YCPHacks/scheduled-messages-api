@@ -24,7 +24,7 @@ async function listScheduledMessages() {
   try {
     session = await mysqlx.getSession(config);
 
-    const result = await session.sql('SELECT 1;').execute();
+    const result = await session.sql('CALL find_schedule_no_post').execute();
 
     const data = await result.fetchAll();
 
