@@ -10,9 +10,13 @@ module.exports = async function (fastify, options) {
 
 
   fastify.post('/', async function (request, reply) {
+    const { id } = request.body;
+
+    await createScheduledMessage(id);
+
     reply.code(201);
 
-    return { key: 'value' };
+    return;
   });
 }
 
@@ -26,7 +30,35 @@ async function listScheduledMessages() {
 
     const result = await session.sql('CALL find_schedule_no_post').execute();
 
-    const data = await result.fetchAll();
+    const data = result.fetchAll();
+
+    return data;
+  } catch (err) {
+    const { message, stack } = err;
+
+    console.error(JSON.stringify({ message, stack }));
+
+    process.exitCode = 1;
+  } finally {
+    await session?.close();
+  }
+}
+
+async function createScheduledMessage(id) {
+  const config = process.env.MYSQLX_SCHEDULED_MESSAGES_DATABASE_URL;
+
+  let session;
+
+  try {
+    session = await mysqlx.getSession(config);
+
+    await session.sql('SET @id = ?;')
+      .bind(id)
+      .execute();
+
+    const result = await session.sql('CALL _create_scheduled_message(@id);').execute();
+
+    const data = result.fetchAll();
 
     return data;
   } catch (err) {
