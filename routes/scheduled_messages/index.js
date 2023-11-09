@@ -28,7 +28,7 @@ async function listScheduledMessages() {
   try {
     session = await mysqlx.getSession(config);
 
-    const result = await session.sql('CALL find_schedule_no_post').execute();
+    const result = await session.sql('CALL list_all_scheduled_messages').execute();
 
     const data = result.fetchAll();
 
@@ -43,7 +43,7 @@ async function listScheduledMessages() {
     await session?.close();
   }
 }
-
+//stinky boys here
 async function createScheduledMessage(id) {
   const config = process.env.MYSQLX_SCHEDULED_MESSAGES_DATABASE_URL;
 
