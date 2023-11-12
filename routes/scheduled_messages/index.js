@@ -10,9 +10,10 @@ module.exports = async function (fastify, options) {
 
 
   fastify.post('/', async function (request, reply) {
-    const { id } = request.body;
+    const { id,message,date,hour,minute } = request.body;
+    
 
-    await createScheduledMessage(id);
+    await createScheduledMessage(id,message,date,hour,minute);
 
     reply.code(201);
 
@@ -43,6 +44,9 @@ async function listScheduledMessages() {
     await session?.close();
   }
 }
+
+
+
 async function createScheduledMessage(id,message,date,hour,minute) {
   const config = process.env.MYSQLX_SCHEDULED_MESSAGES_DATABASE_URL;
 
@@ -55,16 +59,16 @@ async function createScheduledMessage(id,message,date,hour,minute) {
       .bind(id)
       .execute();
       await session.sql('SET @message = ?;')
-      .bind(id)
+      .bind(message)
       .execute();
       await session.sql('SET @date = ?;')
-      .bind(id)
+      .bind(date)
       .execute();
       await session.sql('SET @hour = ?;')
-      .bind(id)
+      .bind(hour)
       .execute();
       await session.sql('SET @minute = ?;')
-      .bind(id)
+      .bind(minute)
       .execute();
 
     const result = await session.sql('CALL create_scheduled_message(@id,@message,@date,@hour, @minute);').execute();
