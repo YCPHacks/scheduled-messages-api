@@ -43,8 +43,7 @@ async function listScheduledMessages() {
     await session?.close();
   }
 }
-//stinky boys here
-async function createScheduledMessage(id) {
+async function createScheduledMessage(id,message,date,hour,minute) {
   const config = process.env.MYSQLX_SCHEDULED_MESSAGES_DATABASE_URL;
 
   let session;
@@ -55,8 +54,20 @@ async function createScheduledMessage(id) {
     await session.sql('SET @id = ?;')
       .bind(id)
       .execute();
+      await session.sql('SET @message = ?;')
+      .bind(id)
+      .execute();
+      await session.sql('SET @date = ?;')
+      .bind(id)
+      .execute();
+      await session.sql('SET @hour = ?;')
+      .bind(id)
+      .execute();
+      await session.sql('SET @minute = ?;')
+      .bind(id)
+      .execute();
 
-    const result = await session.sql('CALL _create_scheduled_message(@id);').execute();
+    const result = await session.sql('CALL create_scheduled_message(@id,@message,@date,@hour, @minute);').execute();
 
     const data = result.fetchAll();
 
