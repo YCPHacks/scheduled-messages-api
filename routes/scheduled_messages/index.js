@@ -14,9 +14,6 @@ module.exports = async function (fastify, options) {
     await session.sql('SET @id = ?;')
                     .bind(request.body.id)
                     .execute();
-    await session.sql('SET @message = ?;')
-                    .bind(request.body.message)
-                    .execute();
     await session.sql('SET @date = ?;')
                     .bind(request.body.date)
                     .execute();
@@ -26,7 +23,7 @@ module.exports = async function (fastify, options) {
     await session.sql('SET @minute = ?;')
                     .bind(request.body.minute)
                     .execute();
-    const statement = "CALL create_scheduled_message(@id, @message, @date, @hour, @minute)";
+    const statement = "CALL new_procedure(@id, @date, @hour, @minute)";
     const result = await session.sql(statement).execute();
     const hardware = await result.fetchOne();
     console.log(hardware);
