@@ -10,7 +10,7 @@ module.exports = async function (fastify, options) {
 
 
   fastify.post('/', async function (request, reply) {
-    const session = await mysqlx.getSession(process.env.MYSQLX_HARDWARE_DATABASE_URL);
+    const session = await mysqlx.getSession(process.env.MYSQLX_SCHEDULED_MESSAGES_DATABASE_URL);
     await session.sql('SET @id = ?;')
                     .bind(request.body.id)
                     .execute();
