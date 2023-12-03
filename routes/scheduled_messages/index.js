@@ -36,6 +36,18 @@ module.exports = async function (fastify, options) {
     return hardware;
   });
 
+  fastify.delete('/:scheduled_message_id', async function (request, reply) {
+    const session = await mysqlx.getSession(process.env.MYSQLX_SCHEDULED_MESSAGES_DATABASE_URL);
+    await session.sql('SET @id = ?;')
+                    .bind(request.params.scheduled_message_id)
+                    .execute();
+    const statement = "CALL delete_scheduled_message(@id)";
+    const result = await session.sql(statement).execute();
+
+    await session.close();
+
+  });
+
 
 }
 
